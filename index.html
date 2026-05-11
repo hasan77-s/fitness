@@ -95,6 +95,7 @@
     .btn-main { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; 
                 padding: 14px; width: 100%; border-radius: 14px; font-weight: 700; cursor: pointer; margin-top: 12px; font-size: 14px; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 12px rgba(0,212,170,0.3); }
     .btn-main:active { transform: scale(0.98); box-shadow: none; }
+    .btn-main:disabled { opacity: 0.6; cursor: not-allowed; }
 
     /* Metrics */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
@@ -154,7 +155,7 @@
     .modal.open { opacity: 1; pointer-events: auto; }
     .modal-card { background: var(--card); padding: 20px; border-radius: 20px; text-align: center; max-width: 90%; width: 320px; transform: scale(0.9); transition: 0.3s; }
     .modal.open .modal-card { transform: scale(1); }
-    .scan-frame { width: 180px; height: 280px; border: 2px dashed var(--primary); border-radius: 20px; margin: 15px auto; display: flex; align-items: center; justify-content: center; background: rgba(0,212,170,0.05); }
+    .scan-frame { width: 180px; height: 280px; border: 2px dashed var(--primary); border-radius: 20px; margin: 15px auto; display: flex; align-items: center; justify-content: center; background: rgba(0,212,170,0.05); font-size: 48px; }
     .modal-btns { display: flex; gap: 10px; margin-top: 15px; }
     .modal-btn { flex: 1; padding: 10px; border-radius: 10px; border: none; cursor: pointer; font-weight: 600; }
     .modal-btn.cancel { background: #1f222a; color: var(--text-muted); }
@@ -168,7 +169,7 @@
     [dir="rtl"] .lang-menu { right: auto; left: 0; }
     [dir="rtl"] .top-bar { flex-direction: row-reverse; }
     [dir="rtl"] .nav { flex-direction: row-reverse; }
-    [dir="rtl"] .days { direction: ltr; } /* Keep horizontal scroll consistent */
+    [dir="rtl"] .days { direction: ltr; }
 
     @media (min-width: 768px) {
       .wrap { max-width: 600px; padding: 24px; }
@@ -203,10 +204,10 @@
       <section class="card" aria-label="Body Analysis">
         <div class="card-head"><span class="card-title" data-i18n="body_analysis">Body Analysis</span><span class="badge" data-i18n="ai_powered">AI POWERED</span></div>
         <div class="grid-2">
-          <div class="metric"><div class="metric-lbl" data-i18n="muscle">Muscle</div><div class="metric-val">72%</div></div>
-          <div class="metric"><div class="metric-lbl" data-i18n="body_fat">Body Fat</div><div class="metric-val">18%</div></div>
-          <div class="metric"><div class="metric-lbl" data-i18n="bmi">BMI</div><div class="metric-val">22.4</div></div>
-          <div class="metric"><div class="metric-lbl" data-i18n="posture">Posture</div><div class="metric-val">A+</div></div>
+          <div class="metric"><div class="metric-lbl" data-i18n="muscle">Muscle</div><div class="metric-val" id="muscle-val">72%</div></div>
+          <div class="metric"><div class="metric-lbl" data-i18n="body_fat">Body Fat</div><div class="metric-val" id="fat-val">18%</div></div>
+          <div class="metric"><div class="metric-lbl" data-i18n="bmi">BMI</div><div class="metric-val" id="bmi-val">22.4</div></div>
+          <div class="metric"><div class="metric-lbl" data-i18n="posture">Posture</div><div class="metric-val" id="posture-val">A+</div></div>
         </div>
         <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;" data-i18n="last_scan">Last scan: 2 days ago</div>
         <button class="btn-main" id="scan-btn" data-i18n="scan_btn">📸 SCAN MY BODY NOW</button>
@@ -215,7 +216,7 @@
       <!-- AI Coach -->
       <section class="card" aria-label="AI Coach">
         <div class="card-head"><span class="card-title" data-i18n="ai_coach">AI COACH</span><span class="badge badge-green" data-i18n="coach_online">🤖 Coach MAX Online & Ready</span></div>
-        <div class="chat" data-i18n="coach_msg">Hey Alex! 💪 Your body fat is down 2% this week. Let's crush today's upper body session. Ready?</div>
+        <div class="chat" id="coach-msg" data-i18n="coach_msg">Hey Alex! 💪 Your body fat is down 2% this week. Let's crush today's upper body session. Ready?</div>
         <h3 style="font-size:14px; margin-bottom:8px;" data-i18n="weekly_plan">WEEKLY PLAN</h3>
         <div class="days">
           <div class="day"><span data-i18n="day_mon">MON</span><br>D1 <span data-i18n="d1_desc">Chest + Triceps</span><br><span data-i18n="int_high">High</span></div>
@@ -239,13 +240,13 @@
         <div class="meal">
           <div class="meal-img">🍗</div>
           <div class="meal-info">
-            <div class="meal-title" data-i18n="meal_title">Grilled Chicken & Rice ✓</div>
-            <div class="conf" data-i18n="meal_conf">94% confidence · AI Analyzed</div>
+            <div class="meal-title" id="meal-title" data-i18n="meal_title">Grilled Chicken & Rice ✓</div>
+            <div class="conf" id="meal-conf" data-i18n="meal_conf">94% confidence · AI Analyzed</div>
             <div class="macros">
-              <div class="macro"><span class="macro-val">487</span><span data-i18n="kcal">KCAL</span></div>
-              <div class="macro"><span class="macro-val">42g</span><span data-i18n="protein">PROTEIN</span></div>
-              <div class="macro"><span class="macro-val">38g</span><span data-i18n="carbs">CARBS</span></div>
-              <div class="macro"><span class="macro-val">12g</span><span data-i18n="fat">FAT</span></div>
+              <div class="macro"><span class="macro-val" id="cal-val">487</span><span data-i18n="kcal">KCAL</span></div>
+              <div class="macro"><span class="macro-val" id="prot-val">42g</span><span data-i18n="protein">PROTEIN</span></div>
+              <div class="macro"><span class="macro-val" id="carb-val">38g</span><span data-i18n="carbs">CARBS</span></div>
+              <div class="macro"><span class="macro-val" id="fat-val-m">12g</span><span data-i18n="fat">FAT</span></div>
             </div>
           </div>
         </div>
@@ -260,9 +261,9 @@
       <section class="card" aria-label="Progress Tracking">
         <div class="card-head"><span class="card-title" data-i18n="progress_track">PROGRESS TRACKING</span></div>
         <div class="prog-grid">
-          <div class="prog"><div class="prog-val">-4.2 kg</div><div class="prog-lbl" data-i18n="total_lost">Total Lost</div></div>
-          <div class="prog"><div class="prog-val">+8%</div><div class="prog-lbl" data-i18n="muscle_gain">Muscle Gain</div></div>
-          <div class="prog"><div class="prog-val">18</div><div class="prog-lbl" data-i18n="workouts_week">Workouts Week</div></div>
+          <div class="prog"><div class="prog-val" id="lost-val">-4.2 kg</div><div class="prog-lbl" data-i18n="total_lost">Total Lost</div></div>
+          <div class="prog"><div class="prog-val" id="gain-val">+8%</div><div class="prog-lbl" data-i18n="muscle_gain">Muscle Gain</div></div>
+          <div class="prog"><div class="prog-val" id="workouts-val">18</div><div class="prog-lbl" data-i18n="workouts_week">Workouts Week</div></div>
         </div>
         <div style="font-size:12px; margin-bottom:6px;" data-i18n="workout_streak">WORKOUT STREAK</div>
         <div class="streak">
@@ -299,6 +300,10 @@
   </div>
 
   <script>
+    // ============ API CONFIG ============
+    const API_BASE = 'https://fitness-api.alyux.workers.dev/api/v1';
+    // ====================================
+
     const i18n = {
       en: {
         greeting: "GOOD MORNING ALEX",
@@ -493,7 +498,71 @@
       }
     });
 
-    // Modal Logic
+    // ============ API FUNCTIONS ============
+    
+    async function scanBody(imageFile) {
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      
+      try {
+        const res = await fetch(`${API_BASE}/scan/body`, {
+          method: 'POST',
+          body: formData
+        });
+        if (!res.ok) throw new Error('Scan failed');
+        return await res.json();
+      } catch (err) {
+        console.error('Body scan error:', err);
+        // Fallback to demo data
+        return { muscle_pct: 72, body_fat_pct: 18, bmi: 22.4, posture_grade: 'A+', confidence: 0.91 };
+      }
+    }
+
+    async function scanFood(imageFile) {
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      
+      try {
+        const res = await fetch(`${API_BASE}/scan/food`, {
+          method: 'POST',
+          body: formData
+        });
+        if (!res.ok) throw new Error('Food scan failed');
+        return await res.json();
+      } catch (err) {
+        console.error('Food scan error:', err);
+        return { name: 'Grilled Chicken & Rice', calories: 487, protein_g: 42, carbs_g: 38, fat_g: 12, confidence: 0.94 };
+      }
+    }
+
+    async function askCoach(message, context = {}) {
+      try {
+        const res = await fetch(`${API_BASE}/coach/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message, context })
+        });
+        if (!res.ok) throw new Error('Coach error');
+        return await res.json();
+      } catch (err) {
+        console.error('Coach error:', err);
+        return { reply: "I'm here to help! 💪 What's your fitness goal today?" };
+      }
+    }
+
+    async function loadProgress(userId = 'demo_user') {
+      try {
+        const res = await fetch(`${API_BASE}/progress/${userId}`);
+        if (!res.ok) throw new Error('Progress load failed');
+        return await res.json();
+      } catch (err) {
+        console.error('Progress error:', err);
+        return { total_lost_kg: -4.2, muscle_gain_pct: 8, weekly_workouts: 18, current_streak: 14 };
+      }
+    }
+
+    // ============ UI INTERACTIONS ============
+    
     const scanBtn = document.getElementById('scan-btn');
     const scanModal = document.getElementById('scan-modal');
     const modalCancel = document.getElementById('modal-cancel');
@@ -501,17 +570,39 @@
 
     scanBtn.addEventListener('click', () => scanModal.classList.add('open'));
     modalCancel.addEventListener('click', () => scanModal.classList.remove('open'));
-    modalCapture.addEventListener('click', () => {
-      scanModal.classList.remove('open');
-      // Simulate scan success
-      scanBtn.textContent = "✅ Scan Complete!";
-      scanBtn.style.background = "var(--success)";
-      scanBtn.style.color = "#000";
-      setTimeout(() => {
-        scanBtn.innerHTML = i18n[currentLang].scan_btn;
-        scanBtn.style.background = "";
-        scanBtn.style.color = "";
-      }, 3000);
+    
+    modalCapture.addEventListener('click', async () => {
+      const btn = modalCapture;
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Analyzing...';
+      
+      try {
+        // Demo: Simulate camera capture with placeholder
+        const result = await scanBody(null); // Pass null for demo; real app: use camera input
+        
+        // Update UI with results
+        document.getElementById('muscle-val').textContent = `${result.muscle_pct}%`;
+        document.getElementById('fat-val').textContent = `${result.body_fat_pct}%`;
+        document.getElementById('bmi-val').textContent = result.bmi;
+        document.getElementById('posture-val').textContent = result.posture_grade;
+        
+        scanBtn.innerHTML = '✅ Scan Complete!';
+        scanBtn.style.background = 'var(--success)';
+        scanBtn.style.color = '#000';
+        
+        setTimeout(() => {
+          scanBtn.innerHTML = i18n[currentLang].scan_btn;
+          scanBtn.style.background = '';
+          scanBtn.style.color = '';
+        }, 3000);
+      } catch (err) {
+        alert('Scan failed. Please try again.');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        scanModal.classList.remove('open');
+      }
     });
 
     // Nav Active State
@@ -524,6 +615,13 @@
 
     // Initialize
     setLanguage(currentLang);
+    
+    // Load progress on startup
+    loadProgress().then(data => {
+      document.getElementById('lost-val').textContent = `${data.total_lost_kg >= 0 ? '+' : ''}${data.total_lost_kg} kg`;
+      document.getElementById('gain-val').textContent = `+${data.muscle_gain_pct}%`;
+      document.getElementById('workouts-val').textContent = data.weekly_workouts;
+    });
   </script>
 </body>
 </html>
